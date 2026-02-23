@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Mes tâches - Todo List{% endblock %}
+
+{% block content %}
+<div id="tasks-section">
+    <div class="header">
+        <h2>Bienvenue <span id="user-name">{{ username }}</span> !</h2>
+        <button onclick="logout()" class="btn-logout">Déconnexion</button>
+    </div>
+    
+    <form id="task-form" onsubmit="event.preventDefault(); addTask()">
+        <div class="form-group">
+            <input type="text" id="task-title" placeholder="Nouvelle tâche" required>
+        </div>
+        <button type="submit">Ajouter</button>
+    </form>
+    
+    <ul id="task-list" class="task-list"></ul>
+</div>
+{% endblock %}

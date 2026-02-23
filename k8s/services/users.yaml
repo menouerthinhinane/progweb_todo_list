@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users
+  namespace: todo-app
+spec:
+  replicas: 2
+  selector: { matchLabels: { app: users } }
+  template:
+    metadata:
+      labels: { app: users }
+      annotations:
+        sidecar.istio.io/inject: "true"   # Injecter le proxy Envoy pour Istio
+    spec:
+      containers:
+      - name: users
+        image: marglou/users:latest   # À remplacer
+        ports: [{ containerPort: 5001 }]
+        env:
+        - name: DB_HOST
+          value: "users-db"
+        - name: DB_NAME
+          valueFrom: { secretKeyRef: { name: users-db-secret, key: db } }
+        - name: DB_USER
+          valueFrom: { secretKeyRef: { name: users-db-secret, key: user } }
+        - name: DB_PASSWORD
+          valueFrom: { secretKeyRef: { name: users-db-secret, key: password } }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: users
+  namespace: todo-app
+spec:
+  selector: { app: users }
+  ports: [{ port: 5001 }]

@@ -3,19 +3,66 @@
 {% block title %}Mes tâches - Todo List{% endblock %}
 
 {% block content %}
-<div id="tasks-section">
+<div class="tasks-container">
     <div class="header">
-        <h2>Bienvenue <span id="user-name">{{ username }}</span> !</h2>
+        <div>
+            <h2>Bonjour <span id="user-name">{{ username }}</span> ! 👋</h2>
+            <p class="date-display" id="current-date"></p>
+        </div>
         <button onclick="logout()" class="btn-logout">Déconnexion</button>
     </div>
     
-    <form id="task-form" onsubmit="event.preventDefault(); addTask()">
-        <div class="form-group">
-            <input type="text" id="task-title" placeholder="Nouvelle tâche" required>
-        </div>
-        <button type="submit">Ajouter</button>
-    </form>
+    <!-- Formulaire d'ajout de tâche -->
+    <div class="task-form-container">
+        <h3>➕ Nouvelle tâche</h3>
+        <form id="task-form">
+            <div class="form-group">
+                <label for="task-title">Titre *</label>
+                <input type="text" id="task-title" placeholder="Ex: Faire les courses" required maxlength="200">
+            </div>
+            
+            <div class="form-group">
+                <label for="task-description">Description (optionnelle)</label>
+                <textarea id="task-description" placeholder="Détails de la tâche..." rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="task-date">Date d'échéance</label>
+                <input type="date" id="task-date">
+                <small class="form-hint">La date ne peut pas être antérieure à aujourd'hui</small>
+            </div>
+            
+            <button type="submit" class="btn-primary">Ajouter la tâche</button>
+        </form>
+    </div>
     
-    <ul id="task-list" class="task-list"></ul>
+    <!-- Filtres -->
+    <div class="filters-container">
+        <h3>📊 Mes tâches</h3>
+        <div class="filter-buttons">
+            <button class="filter-btn active" data-filter="all">Toutes</button>
+            <button class="filter-btn" data-filter="active">À faire</button>
+            <button class="filter-btn" data-filter="completed">Terminées</button>
+        </div>
+    </div>
+    
+    <!-- Liste des tâches -->
+    <div class="tasks-list-container">
+        <div id="loading-spinner" class="text-center" style="display: none;">
+            <div class="spinner"></div>
+            <p>Chargement des tâches...</p>
+        </div>
+        
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <p>✨ Aucune tâche à afficher</p>
+            <small>Créez votre première tâche ci-dessus !</small>
+        </div>
+        
+        <ul id="task-list" class="task-list"></ul>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/tasks.js"></script>
 {% endblock %}

@@ -10,15 +10,21 @@ project/
 │   │   └── Dockerfile
 │   └── frontend/
         ├── app.py
+        ├── requirements.txt
+        ├── Dockerfile
         ├── templates/
-        │   ├── base.html          # Template de base (navbar, structure commune)
-        │   ├── login.html         # Page de connexion
-        │   ├── register.html      # Page d'inscription
-        │   └── tasks.html         # Page des tâches (après connexion)
+        │   ├── base.html
+        │   ├── login.html
+        │   ├── register.html
+        │   └── tasks.html
         ├── static/
-        │   ├── style.css
-        │   └── script.js
-        └── requirements.txt
+        │   ├── css/
+        │   │   └── style.css
+        │   └── js/
+        │       ├── auth.js
+        │       ├── tasks.js
+        │       └── utils.js
+
 ├── k8s/
 │   ├── namespace.yaml           # Namespace dédié
 │   ├── secrets/                 # Mots de passe DB

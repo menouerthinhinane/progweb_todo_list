@@ -26,7 +26,7 @@ REMPLACER marglou par username in Docker
 
 
 Reload frontend (JPP)
-cd C:\Users\826ma\Desktop\projet_progweb\services\frontend; docker build -t marglou/frontend:latest .; docker push marglou/frontend:latest; kubectl delete pods -n todo-app -l app=frontend
+cd C:\Users\826ma\Desktop\projet_progweb\services\frontend; docker build -t marglou/frontend:latest .; docker push marglou/frontend:latest; kubectl delete pods -n todo-app -l app=frontend; 
 kubectl port-forward -n istio-system service/istio-ingressgateway 8080:80
 
 si marche pas 
@@ -38,3 +38,6 @@ docker build -t marglou/users:latest .
 docker push marglou/users:latest
 kubectl rollout restart deployment/users -n todo-app
 kubectl rollout status deployment/users -n todo-app
+
+
+ cd C:\Users\826ma\Desktop\progweb\services\

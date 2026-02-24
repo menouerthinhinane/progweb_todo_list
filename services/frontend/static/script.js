@@ -70,14 +70,14 @@ async function register() {
         console.log('Réponse:', data);
         
         if (res.status === 201) {
-            alert('✅ Inscription réussie !');
+            alert(' Inscription réussie !');
             window.location.href = '/login';
         } else {
-            alert('❌ Erreur: ' + (data.error || 'Inscription échouée'));
+            alert(' Erreur: ' + (data.error || 'Inscription échouée'));
         }
     } catch (err) {
         console.error('Erreur:', err);
-        alert('❌ Erreur de connexion au serveur');
+        alert(' Erreur de connexion au serveur');
     }
 }
 

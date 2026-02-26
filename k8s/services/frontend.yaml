@@ -14,8 +14,13 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: marglou/frontend:latest
+        image: menouerthinhinane/frontend:latest
         ports: [{ containerPort: 5000 }]
+        env:  # ← AJOUTE CETTE SECTION
+        - name: USERS_URL
+          value: "http://users:5001"
+        - name: TASKS_URL
+          value: "http://tasks:5002"
 ---
 apiVersion: v1
 kind: Service

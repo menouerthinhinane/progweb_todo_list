@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: users
-        image: marglou/users:latest   # À remplacer
+        image: menouerthinhinane/users:latest   # À remplacer
         ports: [{ containerPort: 5001 }]
         env:
         - name: DB_HOST

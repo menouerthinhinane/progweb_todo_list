@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: tasks
-        image: marglou/tasks:latest   # Remplacez par votre image
+        image: menouerthinhinane/tasks:latest   # Remplacez par votre image
         ports:
         - containerPort: 5002
         env:

@@ -99,7 +99,25 @@ async function register(e) {
     }
 }
 // === FIN DE LA NOUVELLE FONCTION ===
-
+// Fonction de déconnexion
+//function logout() {
+    // Version synchrone plus simple
+    //localStorage.removeItem('token');
+    //localStorage.removeItem('username');
+    //localStorage.removeItem('userId');
+  //  window.location.href = '/login';
+//}
+function logout() {
+    console.log('🔄 Déconnexion en cours...');
+    console.log('Token avant suppression:', localStorage.getItem('token'));
+    
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    localStorage.removeItem('userId');
+    
+    console.log('✅ Déconnexion réussie, redirection vers /login');
+    window.location.href = '/login';
+}
 // Fonctions utilitaires (déjà existantes)
 function showError(element, message) {
     element.style.display = 'block';
@@ -109,3 +127,5 @@ function showError(element, message) {
 function hideError(element) {
     element.style.display = 'none';
 }
+// Rendre logout disponible globalement pour le onclick dans le HTML
+window.logout = logout;

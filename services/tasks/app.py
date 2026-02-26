@@ -6,7 +6,6 @@ from psycopg2.extras import RealDictCursor
 app = Flask(__name__)
 
 def get_db():
-    """Connexion à PostgreSQL pour les tâches"""
     return psycopg2.connect(
         host=os.environ.get('DB_HOST', 'localhost'),
         port=os.environ.get('DB_PORT', '5432'),
@@ -17,7 +16,6 @@ def get_db():
     )
 
 def init_db():
-    """Crée la table tasks si elle n'existe pas"""
     try:
         with get_db() as conn:
             with conn.cursor() as cur:
@@ -40,7 +38,6 @@ init_db()
 
 @app.route('/tasks', methods=['GET'])
 def get_tasks():
-    """Récupère toutes les tâches d'un utilisateur"""
     user_id = request.args.get('user_id')
     
     if not user_id:
@@ -54,13 +51,12 @@ def get_tasks():
                     (user_id,)
                 )
                 tasks = cur.fetchall()
-        return jsonify(tasks)
+        return jsonify(tasks), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
-    """Crée une nouvelle tâche"""
     data = request.get_json()
     title = data.get('title')
     description = data.get('description', '')
@@ -92,7 +88,6 @@ def create_task():
 
 @app.route('/tasks/<int:task_id>', methods=['PUT'])
 def update_task(task_id):
-    """Met à jour une tâche (compléter)"""
     data = request.get_json()
     completed = data.get('completed')
     
@@ -112,13 +107,12 @@ def update_task(task_id):
         if not updated:
             return jsonify({'error': 'Tâche non trouvée'}), 404
         
-        return jsonify({'id': task_id, 'completed': completed})
+        return jsonify({'id': task_id, 'completed': completed}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/tasks/<int:task_id>', methods=['DELETE'])
 def delete_task(task_id):
-    """Supprime une tâche"""
     try:
         with get_db() as conn:
             with conn.cursor() as cur:
@@ -132,9 +126,9 @@ def delete_task(task_id):
         if not deleted:
             return jsonify({'error': 'Tâche non trouvée'}), 404
         
-        return jsonify({'message': 'Tâche supprimée'})
+        return jsonify({'message': 'Tâche supprimée'}), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5002, debug=True)

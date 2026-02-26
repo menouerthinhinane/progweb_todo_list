@@ -1,4 +1,59 @@
 let currentFilter = 'all';
+// Fonction pour vérifier l'authentification
+function isAuthenticated() {
+    return !!localStorage.getItem('token');
+}
+
+// Fonction utilitaire pour les appels API
+async function apiCall(url, method = 'GET', data = null) {
+    const token = localStorage.getItem('token');
+    
+    const options = {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': token ? `Bearer ${token}` : ''
+        }
+    };
+    
+    if (data && (method === 'POST' || method === 'PUT')) {
+        options.body = JSON.stringify(data);
+    }
+    
+    try {
+        const response = await fetch(url, options);
+        const responseData = await response.json();
+        return {
+            ok: response.ok,
+            data: responseData,
+            status: response.status
+        };
+    } catch (error) {
+        console.error('API Error:', error);
+        return {
+            ok: false,
+            data: { error: error.message },
+            status: 500
+        };
+    }
+}
+
+// Fonctions utilitaires pour l'échappement HTML et le formatage des dates
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+    });
+}
 
 document.addEventListener('DOMContentLoaded', function() {
     // Vérifier l'authentification

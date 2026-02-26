@@ -5,7 +5,7 @@
 {% block content %}
 <div id="login-section">
     <h2>Connexion</h2>
-    <form id="login-form" onsubmit="event.preventDefault(); login()">
+    <form id="login-form">
         <div class="form-group">
             <input type="text" id="username" placeholder="Nom d'utilisateur" required>
         </div>
@@ -19,4 +19,8 @@
         Pas de compte ? <a href="/register">S'inscrire</a>
     </p>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/auth.js"></script>
 {% endblock %}

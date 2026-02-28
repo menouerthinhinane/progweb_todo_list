@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #001260 0%, #8204ff 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -22,13 +22,13 @@ body {
 
 h1 {
     text-align: center;
-    color: #333;
+    color: #ffffff;
     margin-bottom: 30px;
     font-size: 2.5em;
 }
 
 h2, h3 {
-    color: #555;
+    color: #ffffff;
     margin-bottom: 20px;
 }
 
@@ -59,7 +59,7 @@ textarea {
 label {
     display: block;
     margin-bottom: 5px;
-    color: #555;
+    color: #ffffff;
     font-weight: 500;
 }
 
@@ -72,7 +72,7 @@ label {
 
 button {
     padding: 12px 24px;
-    background: #667eea;
+    background: #f48d08;
     color: white;
     border: none;
     border-radius: 5px;
@@ -82,7 +82,7 @@ button {
 }
 
 button:hover {
-    background: #5a67d8;
+    background: #f7c12b;
 }
 
 .btn-primary {
@@ -155,7 +155,7 @@ button:hover {
 }
 
 .date-display {
-    color: #666;
+    color: #d78707;
     font-size: 14px;
     margin-top: 5px;
 }
@@ -291,14 +291,16 @@ button:hover {
 
 .text-center {
     text-align: center;
+    color: #c55200;
 }
 
 /* Utilitaires */
 a {
-    color: #667eea;
+    color: #eba210 !important;
     text-decoration: none;
 }
 
 a:hover {
     text-decoration: underline;
+    color: #c55200 !important;
 }

@@ -6,7 +6,7 @@
 <div class="tasks-container">
     <div class="header">
         <div>
-            <h2>Bonjour <span id="user-name">{{ username }}</span> ! 👋</h2>
+            <h2>Bonjour <span id="user-name">{{ username }}</span> ! </h2>
             <p class="date-display" id="current-date"></p>
         </div>
         <button onclick="logout()" class="btn-logout">Déconnexion</button>
@@ -14,7 +14,7 @@
     
     <!-- Formulaire d'ajout de tâche -->
     <div class="task-form-container">
-        <h3>➕ Nouvelle tâche</h3>
+        <h3> Nouvelle tâche</h3>
         <form id="task-form">
             <div class="form-group">
                 <label for="task-title">Titre *</label>
@@ -38,7 +38,7 @@
     
     <!-- Filtres -->
     <div class="filters-container">
-        <h3>📊 Mes tâches</h3>
+        <h3> Mes tâches</h3>
         <div class="filter-buttons">
             <button class="filter-btn active" data-filter="all">Toutes</button>
             <button class="filter-btn" data-filter="active">À faire</button>
@@ -54,7 +54,7 @@
         </div>
         
         <div id="empty-state" class="empty-state" style="display: none;">
-            <p>✨ Aucune tâche à afficher</p>
+            <p> Aucune tâche à afficher</p>
             <small>Créez votre première tâche ci-dessus !</small>
         </div>
         

@@ -4,7 +4,7 @@ Write-Host "CONSTRUCTION DES IMAGES DOCKER"
 Write-Host "========================================"
 Write-Host ""
 
-$DOCKER_USER = "marglou"  # A MODIFIER
+$DOCKER_USER = "marglou"  # DOCKER__USERNAME
 
 # Service Users
 Write-Host "Construction de users..."

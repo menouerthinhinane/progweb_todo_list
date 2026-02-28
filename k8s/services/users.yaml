@@ -1,3 +1,4 @@
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -10,15 +11,15 @@ spec:
     metadata:
       labels: { app: users }
       annotations:
-        sidecar.istio.io/inject: "true"   # Injecter le proxy Envoy pour Istio
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - name: users
-        image: menouerthinhinane/users:latest   # À remplacer
+        image: marglou/users:latest         # DOCKER__USERNAME
         ports: [{ containerPort: 5001 }]
         env:
         - name: DB_HOST
-          value: "users-db"
+          value: "users-db-service" 
         - name: DB_NAME
           valueFrom: { secretKeyRef: { name: users-db-secret, key: db } }
         - name: DB_USER

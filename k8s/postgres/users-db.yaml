@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -5,7 +6,9 @@ metadata:
   namespace: todo-app
 spec:
   accessModes: [ReadWriteOnce]
-  resources: { requests: { storage: 1Gi } }
+  resources:
+    requests:
+      storage: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -14,29 +17,51 @@ metadata:
   namespace: todo-app
 spec:
   replicas: 1
-  selector: { matchLabels: { app: users-db } }
+  selector:
+    matchLabels:
+      app: users-db
   template:
-    metadata: { labels: { app: users-db } }
+    metadata:
+      labels:
+        app: users-db
     spec:
       containers:
       - name: postgres
         image: postgres:13
         env:
         - name: POSTGRES_DB
-          valueFrom: { secretKeyRef: { name: users-db-secret, key: db } }
+          valueFrom:
+            secretKeyRef:
+              name: users-db-secret
+              key: db
         - name: POSTGRES_USER
-          valueFrom: { secretKeyRef: { name: users-db-secret, key: user } }
+          valueFrom:
+            secretKeyRef:
+              name: users-db-secret
+              key: user
         - name: POSTGRES_PASSWORD
-          valueFrom: { secretKeyRef: { name: users-db-secret, key: password } }
-        ports: [{ containerPort: 5432 }]
-        volumeMounts: [{ name: storage, mountPath: /var/lib/postgresql/data }]
-      volumes: [{ name: storage, persistentVolumeClaim: { claimName: users-db-pvc } }]
+          valueFrom:
+            secretKeyRef:
+              name: users-db-secret
+              key: password
+        ports:
+        - containerPort: 5432
+        volumeMounts:
+        - name: storage
+          mountPath: /var/lib/postgresql/data
+      volumes:
+      - name: storage
+        persistentVolumeClaim:
+          claimName: users-db-pvc
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: users-db
+  name: users-db-service        
   namespace: todo-app
 spec:
-  selector: { app: users-db }
-  ports: [{ port: 5432 }]
+  selector:
+    app: users-db
+  ports:
+  - port: 5432
+    targetPort: 5432

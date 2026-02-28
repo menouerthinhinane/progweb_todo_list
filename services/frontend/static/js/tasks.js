@@ -201,7 +201,7 @@ function createTaskElement(task) {
             ` : ''}
             <div class="task-meta">
                 <span class="task-date ${isOverdue ? 'overdue' : ''}">
-                    📅 ${task.due_date ? formatDate(task.due_date) : 'Pas de date'}
+                      ${task.due_date ? formatDate(task.due_date) : 'Pas de date'}
                     ${isOverdue ? ' (En retard)' : ''}
                 </span>
                 <span class="task-created">
@@ -252,7 +252,6 @@ async function addTask(e) {
             document.getElementById('task-description').value = '';
             document.getElementById('task-date').value = '';
             
-            // Recharger les tâches
             loadTasks();
         } else {
             alert('Erreur lors de l\'ajout de la tâche');
@@ -263,14 +262,12 @@ async function addTask(e) {
     }
 }
 
-// Marquer une tâche comme terminée (la supprime)
 async function toggleTask(taskId) {
     try {
         const { ok } = await apiCall(`/api/tasks/${taskId}`, 'PUT', { completed: true });
         
         if (ok) {
-            // Supprimer la tâche (comme demandé)
-            await deleteTask(taskId);
+            loadTasks(); 
         } else {
             alert('Erreur lors de la mise à jour');
         }
@@ -289,7 +286,7 @@ async function deleteTask(taskId) {
         const { ok } = await apiCall(`/api/tasks/${taskId}`, 'DELETE');
         
         if (ok) {
-            loadTasks(); // Recharger la liste
+            loadTasks(); 
         } else {
             alert('Erreur lors de la suppression');
         }
@@ -311,7 +308,6 @@ function setFilter(filter) {
         }
     });
     
-    // Recharger les tâches
     loadTasks();
 }
 

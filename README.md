@@ -1,6 +1,7 @@
 # Todo List - Application Microservices
 
 Application de gestion de tâches avec authentification, développée en microservices (Flask, Docker, Kubernetes).
+Permet aux utilisateurs de s'inscrire, se connecter et gérer leurs tâches (créer, lire, terminer, supprimer).
 
 ---
 
@@ -10,6 +11,28 @@ Application de gestion de tâches avec authentification, développée en microse
 - **tasks** : Gestion des tâches (port 5002)
 - **frontend** : Interface utilisateur (port 5000)
 - **PostgreSQL** : Base de données (usersdb, tasksdb)
+
+description détaillée dans architecture.md
+
+---
+
+Pour lancer l'application, suivre les étapes ci-dessous.
+# DOCKER__USERNAME doit être remplacé par votre nom d'utilisateur Docker Hub dans les fichiers suivants :
+- k8s/services/frontend.yaml
+- k8s/services/users.yaml
+- k8s/services/tasks.yaml
+- build-images.ps1
+
+
+1. Créer les images Docker et les pousser sur Docker Hub
+.\build-images.ps1
+
+2. Déployer l'application sur Kubernetes (Minikube)
+.\deploy.ps1
+
+3. Accéder à l'application
+http://localhost:5000
+
 
 ---
 
@@ -62,7 +85,6 @@ python3 app.py
 
 # Se connecter à Docker Hub
 docker login
-
 
 
 # Users
@@ -125,7 +147,6 @@ cd services/frontend
 docker build -t menouerthinhinane/frontend:latest .
 docker push menouerthinhinane/frontend:latest
 kubectl delete pods -n todo-app -l app=frontend
-
 
 
 # Voir tous les pods

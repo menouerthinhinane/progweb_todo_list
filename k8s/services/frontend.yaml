@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: menouerthinhinane/frontend:latest
+        image: marglou/frontend:latest        # DOCKER__USERNAME
         ports: [{ containerPort: 5000 }]
         env:  # ← AJOUTE CETTE SECTION
         - name: USERS_URL

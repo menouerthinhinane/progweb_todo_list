@@ -16,7 +16,7 @@ spec:
       - name: frontend
         image: marglou/frontend:latest        # DOCKER__USERNAME
         ports: [{ containerPort: 5000 }]
-        env:  # ← AJOUTE CETTE SECTION
+        env: 
         - name: USERS_URL
           value: "http://users:5001"
         - name: TASKS_URL

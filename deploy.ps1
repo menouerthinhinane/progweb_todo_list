@@ -52,6 +52,8 @@ Write-Host " Deploiement des services..."
 kubectl apply -f k8s/services/ -n $NAMESPACE
 Write-Host ""
 
+kubectl apply -f k8s/istio/mtls.yaml 
+
 # Write-Host " Attente des services..."
 # kubectl wait --for=condition=ready pod -l app=users-service -n $NAMESPACE --timeout=60s
 # kubectl wait --for=condition=ready pod -l app=tasks-service -n $NAMESPACE --timeout=60s
@@ -71,6 +73,7 @@ kubectl wait --for=condition=ready pod -l app=tasks-db -n $NAMESPACE --timeout=6
 kubectl wait --for=condition=ready pod -l app=users -n $NAMESPACE --timeout=60s
 kubectl wait --for=condition=ready pod -l app=tasks -n $NAMESPACE --timeout=60s
 kubectl wait --for=condition=ready pod -l app=frontend -n $NAMESPACE --timeout=60s
+kubectl wait --for=condition=ready pod -l app=istio-ingressgateway -n istio-system --timeout=60s
 
 if ($?) {
     Write-Host " Tous les services sont prêts !" -ForegroundColor Green

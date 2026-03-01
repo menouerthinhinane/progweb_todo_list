@@ -93,7 +93,7 @@ kubectl rollout status deployment/users -n todo-app
 
 ---
 
-## 🖥️ **Lancer en LOCAL** (sans Docker/K8s)
+##  **Lancer en LOCAL** (sans Docker/K8s)
 
 ### Prérequis
 - Python 3.11+
@@ -227,6 +227,7 @@ minikube dashboard
 ---
 
 ** Projet réalisé par MENOUER Thinhinane & HANON Marylou - Mars 2026**
+
 
 
 

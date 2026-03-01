@@ -1,47 +1,106 @@
-# Todo List - Application Microservices
+# ✅ **Vérification complète - README final**
 
-Application de gestion de tâches avec authentification, développée en microservices (Flask, Docker, Kubernetes).
+## 🔍 **Tout est bon !** Voici le **README corrigé et complet** :
+
+```markdown
+# 📝 Todo List - Application Microservices
+
+Application de gestion de tâches avec authentification, développée en microservices (Flask, Docker, Kubernetes, Istio).  
 Permet aux utilisateurs de s'inscrire, se connecter et gérer leurs tâches (créer, lire, terminer, supprimer).
 
----
-
-##  Architecture
+## 🏗️ Architecture
 
 - **users** : Authentification (port 5001)
 - **tasks** : Gestion des tâches (port 5002)
 - **frontend** : Interface utilisateur (port 5000)
-- **PostgreSQL** : Base de données (usersdb, tasksdb)
+- **PostgreSQL** : Bases de données (usersdb, tasksdb)
+- **Istio** : Service Mesh (Gateway, mTLS, VirtualService)
+- **Sécurité** : RBAC, NetworkPolicies, mTLS STRICT
 
-description détaillée dans architecture.md
+📖 *Description détaillée dans [architecture.md](architecture.md)*
 
 ---
 
-Pour lancer l'application, suivre les étapes ci-dessous.
-# DOCKER__USERNAME doit être remplacé par votre nom d'utilisateur Docker Hub dans les fichiers suivants :
-- k8s/services/frontend.yaml
-- k8s/services/users.yaml
-- k8s/services/tasks.yaml
-- build-images.ps1
+## 🐳 **Docker**
 
+### Build et push des images
+```bash
+# Se connecter à Docker Hub
+docker login
 
-1. Créer les images Docker et les pousser sur Docker Hub
-.\build-images.ps1
+# Users
+cd services/users
+docker build -t menouerthinhinane/users:latest .
+docker push menouerthinhinane/users:latest
 
-2. Déployer l'application sur Kubernetes (Minikube)
-.\deploy.ps1
+# Tasks
+cd services/tasks
+docker build -t menouerthinhinane/tasks:latest .
+docker push menouerthinhinane/tasks:latest
 
-3. Accéder à l'application
-http://localhost:5000
+# Frontend
+cd services/frontend
+docker build -t menouerthinhinane/frontend:latest .
+docker push menouerthinhinane/frontend:latest
+```
 
-minikube addons enable dashboard
-minikube dashboard
-Mettre dans URL si besoin :
-http://127.0.0.1:54142/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/workloads?namespace=todo-app
+**⚠️ Remplace `menouerthinhinane` par votre username Docker Hub dans :**
+- `k8s/services/frontend.yaml`
+- `k8s/services/users.yaml`
+- `k8s/services/tasks.yaml`
+- `build-images.ps1`
+
 ---
 
-##  **1. Lancer en LOCAL**
+## ☸️ **Kubernetes**
 
-###  Prérequis
+### Déploiement complet (avec Istio, RBAC, NetworkPolicies)
+
+```bash
+# Démarrer Minikube
+minikube start
+
+# Installer Istio (si pas déjà fait)
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-*
+export PATH=$PWD/bin:$PATH
+istioctl install --set profile=demo -y
+cd ..
+
+# Déployer l'application
+cd k8s
+kubectl apply -f namespace.yaml
+kubectl label namespace todo-app istio-injection=enabled
+kubectl apply -f secrets/
+kubectl apply -f postgres/
+kubectl apply -f services/
+kubectl apply -f rbac/          # RBAC & ServiceAccounts
+kubectl apply -f istio/          # Gateway, VirtualService, mTLS
+
+# Vérifier le déploiement
+kubectl get pods -n todo-app -w
+# Tous les pods doivent être "Running" (2/2 pour les apps avec sidecar Istio)
+
+# Accéder à l'application via Istio Gateway
+kubectl port-forward -n istio-system service/istio-ingressgateway 8080:80
+# Ouvrir http://localhost:8080
+```
+
+### Mise à jour d'un service
+```bash
+# Exemple pour users
+cd services/users
+docker build -t menouerthinhinane/users:latest .
+docker push menouerthinhinane/users:latest
+kubectl rollout restart deployment/users -n todo-app
+kubectl rollout status deployment/users -n todo-app
+```
+
+---
+
+## 🖥️ **Lancer en LOCAL** (sans Docker/K8s)
+
+### Prérequis
 - Python 3.11+
 - Docker
 - Git
@@ -55,9 +114,10 @@ cd progweb_todo_list
 docker run --name postgres-todo -e POSTGRES_PASSWORD=postgres -p 5432:5432 -d postgres:13
 docker exec -it postgres-todo psql -U postgres -c "CREATE DATABASE usersdb;"
 docker exec -it postgres-todo psql -U postgres -c "CREATE DATABASE tasksdb;"
+```
 
-
-# Terminal 1 - Service users
+**Terminal 1 - Service users**
+```bash
 cd services/users
 python3 -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -65,110 +125,113 @@ source venv/bin/activate  # Linux/Mac
 pip install -r requirements.txt
 python3 app.py
 # http://localhost:5001
+```
 
-# Terminal 2 - Service tasks
+**Terminal 2 - Service tasks**
+```bash
 cd services/tasks
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python3 app.py
 # http://localhost:5002
+```
 
-# Terminal 3 - Frontend
+**Terminal 3 - Frontend**
+```bash
 cd services/frontend
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 python3 app.py
 # http://localhost:5000
+```
 
-# Tester l'application
-# Ouvrir http://localhost:5000
-# S'inscrire, se connecter, ajouter des tâches
+**Tester l'application** : http://localhost:5000
 
-# Se connecter à Docker Hub
-docker login
+---
 
+## 📊 **Commandes utiles Kubernetes**
 
-# Users
-cd services/users
-docker build -t menouerthinhinane/users:latest .
-docker push menouerthinhinane/users:latest
-
-# Tasks
-cd services/tasks
-docker build -t menouerthinhinane/tasks:latest .
-docker push menouerthinhinane/tasks:latest
-
+### Surveillance
+```bash
 # Voir tous les pods
 kubectl get pods -n todo-app
 
-# Voir les logs
+# Voir les logs d'un service
 kubectl logs -n todo-app -l app=users
 kubectl logs -n todo-app -l app=tasks
 kubectl logs -n todo-app -l app=frontend
 
-# Voir les bases de données
-kubectl exec -it -n todo-app deployment/users-db -- psql -U postgres -d usersdb -c "SELECT * FROM users;"
-kubectl exec -it -n todo-app deployment/tasks-db -- psql -U postgres -d tasksdb -c "SELECT * FROM tasks;"
-
-# Décrire un pod en problème
-kubectl describe pod -n todo-app <nom-du-pod># Frontend
-cd services/frontend
-docker build -t menouerthinhinane/frontend:latest .
-docker push menouerthinhinane/frontend:latest
-
-
-
-# Démarrer Minikube
-minikube start
-
-# Déployer l'application
-cd k8s
-kubectl apply -f namespace.yaml
-kubectl apply -f secrets/
-kubectl apply -f postgres/
-kubectl apply -f services/
-
-# Vérifier le déploiement
-kubectl get pods -n todo-app -w
-# Attendre que tous les pods soient "Running"
-
-# Accéder à l'application
-kubectl port-forward -n todo-app service/frontend 5000:5000
-# Ouvrir http://localhost:5000
-
-# Exemple pour users
-cd services/users
-docker build -t menouerthinhinane/users:latest .
-docker push menouerthinhinane/users:latest
-kubectl rollout restart deployment/users -n todo-app
-kubectl rollout status deployment/users -n todo-app
-
-# Exemple pour frontend
-cd services/frontend
-docker build -t menouerthinhinane/frontend:latest .
-docker push menouerthinhinane/frontend:latest
-kubectl delete pods -n todo-app -l app=frontend
-
-
-# Voir tous les pods
-kubectl get pods -n todo-app
-
-# Voir les logs
-kubectl logs -n todo-app -l app=users
-kubectl logs -n todo-app -l app=tasks
-kubectl logs -n todo-app -l app=frontend
-
-# Voir les bases de données
-kubectl exec -it -n todo-app deployment/users-db -- psql -U postgres -d usersdb -c "SELECT * FROM users;"
-kubectl exec -it -n todo-app deployment/tasks-db -- psql -U postgres -d tasksdb -c "SELECT * FROM tasks;"
+# Voir les logs du sidecar Istio
+kubectl logs -n todo-app -l app=users -c istio-proxy
 
 # Décrire un pod en problème
 kubectl describe pod -n todo-app <nom-du-pod>
+```
 
-Liens utiles
+### Bases de données
+```bash
+# Voir les utilisateurs
+kubectl exec -it -n todo-app deployment/users-db -- psql -U postgres -d usersdb -c "SELECT * FROM users;"
 
-    Dépôt GitHub : https://github.com/menouerthinhinane/progweb_todo_list
+# Voir les tâches
+kubectl exec -it -n todo-app deployment/tasks-db -- psql -U postgres -d tasksdb -c "SELECT * FROM tasks;"
+```
 
-    Images Docker Hub : https://hub.docker.com/u/menouerthinhinane
+### NetworkPolicies
+```bash
+# Lister les politiques réseau
+kubectl get networkpolicies -n todo-app
+```
+
+### Istio
+```bash
+# Vérifier mTLS
+kubectl get peerauthentication -n todo-app
+
+# Voir la gateway
+kubectl get gateway -n todo-app
+
+# Voir le VirtualService
+kubectl get virtualservice -n todo-app
+```
+
+---
+
+## 📈 **Dashboard Kubernetes**
+
+```bash
+minikube dashboard
+# URL typique : http://127.0.0.1:54142/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/workloads?namespace=todo-app
+```
+
+---
+
+## 🔗 **Liens utiles**
+
+- **Dépôt GitHub** : [menouerthinhinane/progweb_todo_list](https://github.com/menouerthinhinane/progweb_todo_list)
+- **Images Docker Hub** : [hub.docker.com/u/menouerthinhinane](https://hub.docker.com/u/menouerthinhinane)
+
+---
+
+## ✅ **Fonctionnalités implémentées**
+
+- [x] Inscription / Connexion / Déconnexion (JWT)
+- [x] Gestion des tâches (CRUD)
+- [x] Microservices Flask
+- [x] Persistance PostgreSQL
+- [x] Conteneurisation Docker
+- [x] Orchestration Kubernetes
+- [x] Service Mesh Istio (Gateway, mTLS STRICT)
+- [x] RBAC (ServiceAccounts)
+- [x] NetworkPolicies (isolation réseau)
+- [x] Health Checks (liveness/readiness)
+- [x] Resource Limits
+
+---
+
+**🚀 Projet réalisé par MENOUER Thinhinane & HANON Marylou - Mars 2026**
+```
+
+---

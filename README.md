@@ -227,8 +227,6 @@ minikube dashboard
 ---
 
 ** Projet réalisé par MENOUER Thinhinane & HANON Marylou - Mars 2026**
-```
 
----
 
 

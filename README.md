@@ -1,12 +1,10 @@
 
-
-```markdown
-# 📝 Todo List - Application Microservices
+#  Todo List - Application Microservices
 
 Application de gestion de tâches avec authentification, développée en microservices (Flask, Docker, Kubernetes, Istio).  
 Permet aux utilisateurs de s'inscrire, se connecter et gérer leurs tâches (créer, lire, terminer, supprimer).
 
-## 🏗️ Architecture
+##  Architecture
 
 - **users** : Authentification (port 5001)
 - **tasks** : Gestion des tâches (port 5002)
@@ -15,7 +13,7 @@ Permet aux utilisateurs de s'inscrire, se connecter et gérer leurs tâches (cr�
 - **Istio** : Service Mesh (Gateway, mTLS, VirtualService)
 - **Sécurité** : RBAC, NetworkPolicies, mTLS STRICT
 
-📖 *Description détaillée dans [architecture.md](architecture.md)*
+*Description détaillée dans [architecture.md](architecture.md)*
 
 ---
 
@@ -42,7 +40,6 @@ docker build -t menouerthinhinane/frontend:latest .
 docker push menouerthinhinane/frontend:latest
 ```
 
-**⚠️ Remplace `menouerthinhinane` par votre username Docker Hub dans :**
 - `k8s/services/frontend.yaml`
 - `k8s/services/users.yaml`
 - `k8s/services/tasks.yaml`
@@ -50,7 +47,7 @@ docker push menouerthinhinane/frontend:latest
 
 ---
 
-## ☸️ **Kubernetes**
+##  **Kubernetes**
 
 ### Déploiement complet (avec Istio, RBAC, NetworkPolicies)
 
@@ -149,7 +146,7 @@ python3 app.py
 
 ---
 
-## 📊 **Commandes utiles Kubernetes**
+##  **Commandes utiles Kubernetes**
 
 ### Surveillance
 ```bash
@@ -197,7 +194,7 @@ kubectl get virtualservice -n todo-app
 
 ---
 
-## 📈 **Dashboard Kubernetes**
+##  **Dashboard Kubernetes**
 
 ```bash
 minikube dashboard
@@ -213,7 +210,7 @@ minikube dashboard
 
 ---
 
-## ✅ **Fonctionnalités implémentées**
+##  **Fonctionnalités implémentées**
 
 - [x] Inscription / Connexion / Déconnexion (JWT)
 - [x] Gestion des tâches (CRUD)
@@ -229,8 +226,9 @@ minikube dashboard
 
 ---
 
-**🚀 Projet réalisé par MENOUER Thinhinane & HANON Marylou - Mars 2026**
+** Projet réalisé par MENOUER Thinhinane & HANON Marylou - Mars 2026**
 ```
 
 ---
+
 

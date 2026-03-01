@@ -1,23 +1,121 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: frontend-sa
+  namespace: todo-app
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: users-sa
+  namespace: todo-app
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tasks-sa
+  namespace: todo-app
+
+
+
+# Frontend : lecture seule des pods + services 
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   namespace: todo-app
-  name: pod-reader
+  name: frontend-role
+rules:
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get"]
+
+# Users Service : accès à ses propres secrets + pods
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: todo-app
+  name: users-role
 rules:
 - apiGroups: [""]
   resources: ["pods"]
-  verbs: ["get", "watch", "list"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["users-db-secret"]   
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: todo-app
+  name: tasks-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+  resourceNames: ["tasks-db-secret"]  
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+
+# ----------------------------
+# ROLEBINDINGS
+# ----------------------------
+
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: read-pods
+  name: frontend-rolebinding
   namespace: todo-app
 subjects:
-- kind: User
-  name: "example-user"   # Un utilisateur authentifié (externe)
-  apiGroup: rbac.authorization.k8s.io
+- kind: ServiceAccount
+  name: frontend-sa
+  namespace: todo-app
 roleRef:
   kind: Role
-  name: pod-reader
+  name: frontend-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: users-rolebinding
+  namespace: todo-app
+subjects:
+- kind: ServiceAccount
+  name: users-sa
+  namespace: todo-app
+roleRef:
+  kind: Role
+  name: users-role
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tasks-rolebinding
+  namespace: todo-app
+subjects:
+- kind: ServiceAccount
+  name: tasks-sa
+  namespace: todo-app
+roleRef:
+  kind: Role
+  name: tasks-role
   apiGroup: rbac.authorization.k8s.io

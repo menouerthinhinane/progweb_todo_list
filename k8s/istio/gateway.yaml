@@ -5,7 +5,7 @@ metadata:
   namespace: todo-app
 spec:
   selector:
-    istio: ingressgateway   # gateway par défaut d'Istio
+    istio: ingressgateway  
   servers:
   - port: { number: 80, name: http, protocol: HTTP }
     hosts: ["*"]

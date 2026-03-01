@@ -13,9 +13,16 @@ spec:
       annotations:
         sidecar.istio.io/inject: "true"
     spec:
+      serviceAccountName: users-sa
+      automountServiceAccountToken: false
       containers:
       - name: users
         image: marglou/users:latest         # DOCKER__USERNAME
+        imagePullPolicy: Always             
+        securityContext:                   
+          runAsNonRoot: true
+          runAsUser: 1000
+          readOnlyRootFilesystem: true
         ports: [{ containerPort: 5001 }]
         env:
         - name: DB_HOST
@@ -26,6 +33,25 @@ spec:
           valueFrom: { secretKeyRef: { name: users-db-secret, key: user } }
         - name: DB_PASSWORD
           valueFrom: { secretKeyRef: { name: users-db-secret, key: password } }
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5001
+          initialDelaySeconds: 5
+          periodSeconds: 3
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "128Mi"
+            cpu: "200m"
 ---
 apiVersion: v1
 kind: Service

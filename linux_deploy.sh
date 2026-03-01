@@ -30,8 +30,10 @@ kubectl apply -f k8s/postgres/ -n $NAMESPACE
 kubectl wait --for=condition=ready pod -l app=users-db -n $NAMESPACE --timeout=60s
 kubectl wait --for=condition=ready pod -l app=tasks-db -n $NAMESPACE --timeout=60s
 
-kubectl apply -f k8s/services/ -n $NAMESPACE
-kubectl apply -f k8s/istio/mtls.yaml 
+kubectl apply -f k8s/services/ -n $NAMESPACE/
+kubectl apply -f k8s/istio/
+kubectl apply -f k8s/rbac/role.yaml
+kubectl apply -f k8s/network-policies/network_policy.yaml
 
 kubectl wait --for=condition=ready pod -l app=users-db -n $NAMESPACE --timeout=60s
 kubectl wait --for=condition=ready pod -l app=tasks-db -n $NAMESPACE --timeout=60s

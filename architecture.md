@@ -41,6 +41,11 @@ project/
 │   │   ├── gateway.yaml
 │   │   ├── virtualservice.yaml
 │   │   └── mtls.yaml             # PeerAuthentication
+|   |
+|   |___network-policies/              # Network Policies
+|   |   └── network_policy.yaml
+|   |
 │   └── rbac/                      # RBAC
 │       └── role.yaml
+|
 └── README.md

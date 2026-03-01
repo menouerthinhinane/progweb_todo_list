@@ -1,5 +1,4 @@
 # mTLS configuration 
-
 --- 
 # Config de PeerAuthentication 
 apiVersion: security.istio.io/v1beta1

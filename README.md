@@ -33,7 +33,10 @@ Pour lancer l'application, suivre les étapes ci-dessous.
 3. Accéder à l'application
 http://localhost:5000
 
-
+minikube addons enable dashboard
+minikube dashboard
+Mettre dans URL si besoin :
+http://127.0.0.1:54142/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy/#/workloads?namespace=todo-app
 ---
 
 ##  **1. Lancer en LOCAL**

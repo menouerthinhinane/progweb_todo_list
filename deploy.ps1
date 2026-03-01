@@ -1,85 +1,30 @@
-Write-Host "========================================"
-Write-Host " INITIALISATION COMPLETE DU PROJET"
-Write-Host "========================================"
-Write-Host ""
-
 $NAMESPACE = "todo-app"
-$namespaceExists = kubectl get namespace $NAMESPACE 2>$null
 
-if (-not $namespaceExists) {
-    Write-Host "Création du namespace $NAMESPACE..."
-    kubectl create namespace $NAMESPACE
-    Write-Host ""
-} else {
-    Write-Host "Le namespace $NAMESPACE existe déjà"
-    Write-Host ""
-}
+Write-Host "Déploiement Todo App..." -ForegroundColor Cyan
 
+# Namespace + Istio injection
+kubectl apply -f k8s/namespace.yaml
 
-Write-Host " Application des secrets depuis les fichiers..." -ForegroundColor Yellow
-kubectl apply -f k8s/secrets/ -n $NAMESPACE
-Write-Host ""
+# Secrets + DBs
+kubectl apply -f k8s/secrets/
+kubectl apply -f k8s/postgres/
 
-Write-Host " Verification des secrets existants..." -ForegroundColor Yellow
+# Attendre que les DBs soient READY avant de continuer
+Write-Host " Attente des bases de donnees..." -ForegroundColor Yellow
+kubectl wait --for=condition=ready pod -l app=users-db -n $NAMESPACE --timeout=120s
+kubectl wait --for=condition=ready pod -l app=tasks-db -n $NAMESPACE --timeout=120s
+Write-Host " DBs pretes !" -ForegroundColor Green
 
-kubectl get secret users-db-secret -n $NAMESPACE > $null 2>&1
-$usersSecretExists = $?
+# Services, Sécurité
+kubectl apply -f k8s/services/
+kubectl apply -f k8s/istio/
+kubectl apply -f k8s/rbac/role.yaml
+kubectl apply -f k8s/network-policies/network_policy.yaml
 
-kubectl get secret tasks-db-secret -n $NAMESPACE > $null 2>&1
-$tasksSecretExists = $?
-
-if ($usersSecretExists -and $tasksSecretExists) {
-    Write-Host "  Les secrets existent déjà" -ForegroundColor Green
-} else {
-    Write-Host "   Les secrets n'existent pas !" -ForegroundColor Red
-    Write-Host "   Veuillez créer les secrets dans k8s/secrets/ :" -ForegroundColor Yellow
-    Write-Host "Arrêt du programme." -ForegroundColor Red
-    exit 1  
-}
-Write-Host ""
-
-Write-Host "4. Deploiement des bases de donnees..."
-kubectl apply -f k8s/postgres/ -n $NAMESPACE
-Write-Host ""
-
-Write-Host "5. Attente des bases de donnees..."
-kubectl wait --for=condition=ready pod -l app=users-db -n $NAMESPACE --timeout=60s
-kubectl wait --for=condition=ready pod -l app=tasks-db -n $NAMESPACE --timeout=60s
-Write-Host "   Bases de donnees prêtes" -ForegroundColor Green
-Write-Host ""
-
-Write-Host " Deploiement des services..."
-kubectl apply -f k8s/services/ -n $NAMESPACE
-Write-Host ""
-
-kubectl apply -f k8s/istio/mtls.yaml 
-
-# Write-Host " Attente des services..."
-# kubectl wait --for=condition=ready pod -l app=users-service -n $NAMESPACE --timeout=60s
-# kubectl wait --for=condition=ready pod -l app=tasks-service -n $NAMESPACE --timeout=60s
-# kubectl wait --for=condition=ready pod -l app=frontend -n $NAMESPACE --timeout=60s
-# Write-Host "   Services prêts" -ForegroundColor Green
-# Write-Host ""
-
-# Write-Host " Verification des pods :"
-# kubectl get pods -n $NAMESPACE
-# Write-Host ""
+# Attente de tous les pods
+Write-Host " Attente des microservices..." -ForegroundColor Yellow
+kubectl wait --for=condition=ready pod --all -n $NAMESPACE --timeout=120s
 
 
-Write-Host "Attente que tous les services soient prêts..." -ForegroundColor Yellow
-
-kubectl wait --for=condition=ready pod -l app=users-db -n $NAMESPACE --timeout=60s
-kubectl wait --for=condition=ready pod -l app=tasks-db -n $NAMESPACE --timeout=60s
-kubectl wait --for=condition=ready pod -l app=users -n $NAMESPACE --timeout=60s
-kubectl wait --for=condition=ready pod -l app=tasks -n $NAMESPACE --timeout=60s
-kubectl wait --for=condition=ready pod -l app=frontend -n $NAMESPACE --timeout=60s
-kubectl wait --for=condition=ready pod -l app=istio-ingressgateway -n istio-system --timeout=60s
-
-if ($?) {
-    Write-Host " Tous les services sont prêts !" -ForegroundColor Green
-    kubectl port-forward -n $NAMESPACE svc/frontend 5000:5000
-} else {
-    Write-Host " Erreur : certains services ne sont pas prêts" -ForegroundColor Red
-}
-Write-Host "Pour acceder a l'application :"
-Write-Host "  http://localhost:5000"
+Write-Host " Acces : http://localhost:5000" -ForegroundColor Green
+kubectl port-forward -n $NAMESPACE svc/frontend 5000:5000

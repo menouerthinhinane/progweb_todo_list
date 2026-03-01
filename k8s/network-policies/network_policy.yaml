@@ -1,0 +1,217 @@
+# ============================================================
+# NetworkPolicy - Todo App
+# Compatible : Istio mTLS + RBAC + sidecars Envoy
+#
+# Istio utilise :
+#   - Port 15090 : métriques Envoy
+#   - Port 15020 : health check sidecar
+#   - Port 15021 : readiness probe
+#   - Tout le trafic applicatif passe par le sidecar Envoy
+#
+# Stratégie :
+#   - NetworkPolicy = isolation L3/L4 (surtout pour les DBs)
+#   - AuthorizationPolicy Istio = contrôle L7 inter-services
+# ============================================================
+
+# ----------------------------
+# FRONTEND
+# ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: frontend-netpol
+  namespace: todo-app
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - {}   # Tout autorisé en entrée (Istio Gateway + mTLS)
+  egress:
+    - to:
+        - podSelector: {}   # Tous les pods du namespace (sidecars Istio inclus)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# ----------------------------
+# USERS SERVICE
+# ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: users-netpol
+  namespace: todo-app
+spec:
+  podSelector:
+    matchLabels:
+      app: users
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - {}   # Istio mTLS gère l'auth en ingress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: users-db
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# ----------------------------
+# TASKS SERVICE
+# ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tasks-netpol
+  namespace: todo-app
+spec:
+  podSelector:
+    matchLabels:
+      app: tasks
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - {}   # Istio mTLS gère l'auth en ingress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: tasks-db
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: istio-system
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+---
+# ----------------------------
+# USERS-DB : uniquement users
+# ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: users-db-netpol
+  namespace: todo-app
+spec:
+  podSelector:
+    matchLabels:
+      app: users-db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: users
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress: []
+
+---
+# ----------------------------
+# TASKS-DB : uniquement tasks
+# ----------------------------
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: tasks-db-netpol
+  namespace: todo-app
+spec:
+  podSelector:
+    matchLabels:
+      app: tasks-db
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: tasks
+      ports:
+        - protocol: TCP
+          port: 5432
+  egress: []
+
+---
+# ============================================================
+# AUTHORIZATION POLICY ISTIO (contrôle L7)
+# Complète les NetworkPolicies
+# ============================================================
+
+# Seul le frontend peut appeler users
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: users-allow-frontend-only
+  namespace: todo-app
+spec:
+  selector:
+    matchLabels:
+      app: users
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/todo-app/sa/frontend-sa"
+              - "cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"
+
+---
+# Seul le frontend peut appeler tasks
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: tasks-allow-frontend-only
+  namespace: todo-app
+spec:
+  selector:
+    matchLabels:
+      app: tasks
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals:
+              - "cluster.local/ns/todo-app/sa/frontend-sa"
+              - "cluster.local/ns/istio-system/sa/istio-ingressgateway-service-account"

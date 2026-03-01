@@ -5,7 +5,7 @@
     <title>{% block title %}Todo List{% endblock %}</title>
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
     {% block content %}{% endblock %}
 

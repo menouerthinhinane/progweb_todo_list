@@ -9,7 +9,6 @@ spec:
   gateways:
   - todo-gateway
   http:
-  # Route pour l'API users - AVEC rewrite
   - match:
     - uri:
         prefix: /api/users
@@ -20,7 +19,6 @@ spec:
         host: users
         port:
           number: 5001
-  # Route pour l'API tasks - AVEC rewrite
   - match:
     - uri:
         prefix: /api/tasks
@@ -31,7 +29,6 @@ spec:
         host: tasks
         port:
           number: 5002
-  # Route par défaut vers le frontend (SANS match, SANS rewrite)
   - route:
     - destination:
         host: frontend

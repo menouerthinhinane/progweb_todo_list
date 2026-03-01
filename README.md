@@ -17,7 +17,7 @@ Permet aux utilisateurs de s'inscrire, se connecter et gérer leurs tâches (cr�
 
 ---
 
-## 🐳 **Docker**
+##  **Docker**
 
 ### Build et push des images
 ```bash
@@ -203,7 +203,7 @@ minikube dashboard
 
 ---
 
-## 🔗 **Liens utiles**
+##  **Liens utiles**
 
 - **Dépôt GitHub** : [menouerthinhinane/progweb_todo_list](https://github.com/menouerthinhinane/progweb_todo_list)
 - **Images Docker Hub** : [hub.docker.com/u/menouerthinhinane](https://hub.docker.com/u/menouerthinhinane)
@@ -227,6 +227,7 @@ minikube dashboard
 ---
 
 ** Projet réalisé par MENOUER Thinhinane & HANON Marylou - Mars 2026**
+
 
 
 
